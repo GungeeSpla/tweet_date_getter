@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ツイートIDからツイート日時を取得するプログラム</title>
+<meta name="description" content="ツイートIDまたはツイートURLをペーストすると、そのツイートの投稿時刻が表示されるプログラムです。" />
+<script>
+function onload() {
+  const tweetIdInput = document.getElementById('tweet-id');
+  tweetIdInput.addEventListener('paste', (e) => {
+    setTimeout(() => {
+      // <input>に入力された内容
+      const inputValue = tweetIdInput.value;
+      // '?'で区切って最初の値を取り出し（クエリパラメータの削除）
+      // '/'で区切って最後の値を取り出す（URLからツイートIDの抽出）
+      // 最初からツイートIDだけがコピペされていても問題ない
+      const tweetId = parseInt(inputValue.split('?').shift().split('/').pop());
+      // 2で22回割る（右へ22ビットシフトする）とタイムスタンプの値となる
+      let timestamp = tweetId;
+      for (let i = 0; i < 22; i += 1) {
+        timestamp /= 2;
+      }
+      // UNIX時刻(ミリ秒)
+      const milli_unix = Math.floor(timestamp) + 1288834974657;
+      // UNIX時刻
+      const unix = Math.floor(milli_unix / 1000);
+      // Dateオブジェクト
+      const date = new Date(milli_unix);
+      // 年、月、日
+      const Y = date.getFullYear();
+      const M = date.getMonth() + 1;
+      const D = date.getDate();
+      // 時、分（2桁でゼロ埋め）
+      const hh = ("00" + date.getHours()).slice(-2);
+      const mm = ("00" + date.getMinutes()).slice(-2);
+      // 日付を表す文字列を作成する
+      const dateStr = `${Y}/${M}/${D} ${hh}:${mm}`;
+      document.getElementById('result').value = dateStr;
+    }, 100);
+  });
+}
+</script>
+<style>
+body {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 15px;
+}
+span, input {
+  font-size: 30px;
+}
+span {
+  display: inline-block;
+  width: 240px;
+  text-align: left;
+}
+h4 {
+  display: inline-block;
+  color: gray;
+  margin: 10px;
+}
+</style>
+</head>
+<body onload="onload()">
+ツイートIDまたはツイートURLを以下にペーストしてください。<br><br>
+<span>ツイートID/URL</span>：<input type="text" id="tweet-id"><br>
+<span>ツイート日時</span>：<input type="text" id="result"></input><br><br>
+<div>
+参考『<a href="https://yoshipc.net/tweet-id-to-mili-sec/">ツイートIDからsnowflakeを用いて投稿時刻のミリ秒を算出</a>』<br>
+<h4>ツイートID</h4><h4>ツイートURL</h4><h4>投稿</h4><h4>時刻</h4><h4>時間</h4><h4>投稿時刻</h4><h4>投稿時間</h4><h4>計算</h4><h4>算出</h4><h4>推測</h4><h4>推定</h4><h4>プログラム</h4>
+</div>
+</body>
+</html>
